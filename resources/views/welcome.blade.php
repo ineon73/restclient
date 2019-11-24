@@ -97,7 +97,7 @@
             try {
                 DB::connection()->getPdo();
                 if (DB::connection()->getDatabaseName()) {
-                    echo "Yes! Successfully connected to the DB: " . DB::connection()->getDatabaseName();
+                    echo "Yes! Successfully connected to the DB: " . DB::connection();
                 } else {
                     die("Could not find the database. Please check your configuration.");
                 }

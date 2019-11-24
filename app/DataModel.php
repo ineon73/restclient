@@ -3,12 +3,14 @@
 namespace App;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use Corcel\Model\Post as Corcel;
 use DateTime;
 
 interface DataAccess
 {
-    public function get($id);
+    public static function get($id);
 }
 
 class DataModel extends Corcel implements DataAccess
@@ -35,11 +37,6 @@ class DataModel extends Corcel implements DataAccess
         'comment_count' => 'integer',
     ];
 
-    public function get($id)
-    {
-        return Corcel::find($id);
-    }
-
     public function getPostDateAttribute($date)
     {
         $date = new DateTime($date);
@@ -64,24 +61,33 @@ class DataModel extends Corcel implements DataAccess
         return $date->format('d.m.Y');
     }
 
-    public static function connect($config)
+    public static function get($id)
     {
+        return var_dump(Corcel::find($id));
+    }
 
+    public static function connect()
+    {
         $is_connect = false;
         $i = 0;
         try {
             do {
-                $is_connect = DB::connection()->getPdo();
+               logs();
+                $is_connect = (bool)DB::connection()->getPdo();
                 $i++;
                 sleep(3);
             } while ($i < 3 xor $is_connect == true);
         } catch (\Exception $e) {
-            echo "connect error ";
+            echo $e = "connect error ";
+
+            Log::warning(['Ошибка' => $e]);
         }
         if ($is_connect == true) {
             echo "connect";
         }
+
+        Log::info(['Подключен' => $is_connect, 'подключение к' => DB::connection()->getDatabaseName()]);
+
+
     }
-
-
 }

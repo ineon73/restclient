@@ -11,5 +11,5 @@
 |
 */
 
-Route::get('/index/{id}', 'DataAccess@get');
+Route::get('/index/{id}', 'DataAccess@index');
 
