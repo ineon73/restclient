@@ -10,12 +10,7 @@ class DataAccess extends Controller
 {
     public function get($id)
     {
-        $post = Corcel::find($id);
-        foreach ($post as $item => $value) {
-            var_dump($value);
-
-        }
-        echo "<hr>";
+        Corcel::connect($id);
 
 }
 
