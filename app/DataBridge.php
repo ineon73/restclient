@@ -4,8 +4,6 @@ namespace App;
 
 use Corcel\Model\Post as Corsel;
 use DateTime;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class DataBridge extends Corsel
 {
@@ -64,22 +62,6 @@ class DataBridge extends Corsel
         '_leyka_donation_id_on_gateway_response' => 'integer',
     ];
 
-    public static function connect()
-    {
-        $is_connect = false;
-        $i = 0;
-        try {
-            do {
-                logs();
-                $is_connect = (bool)DB::connection()->getPdo();
-                $i++;
-                sleep(3);
-            } while ($i < 3 xor $is_connect == true);
-        } catch (\Exception $e) {
-            echo $e = "connect error ";
-        }
-        if ($is_connect == true) {
-            echo "connect";
-        }
-    }
+
+
 }
