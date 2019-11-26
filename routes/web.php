@@ -11,5 +11,7 @@
 |
 */
 
-Route::get('/{id}', 'DataAccess@index');
-
+Route::get('/api/{id}', 'DataAccess@index');
+Route::any('/', function () {
+   echo "Для получения апи использовать адрес ./api/(id)";
+});
