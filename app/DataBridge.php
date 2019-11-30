@@ -3,34 +3,25 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
-use DateTime;
-use Illuminate\Support\Facades\DB;
 
 class DataBridge extends Corsel
 {
     public function get($id)
     {
         for ($i = 0; $i < 3; $i++) {
-            echo $i . PHP_EOL;
             try {
-                if (DB::connection()->getDatabaseName()) {
-                    sleep(2);
-                    DB::reconnect();
-                    echo "попытка подключения";
-                } else {
-                    echo "подключен";
-                }
+                return Corsel::find($id);
             } catch
             (\PDOException $exception) {
+                sleep(2);
                 if ($i < 2) {
-                    echo "первое эхо";
+                    echo $exception;
                 }
-                if ($i == 2) {
+                else {
                     throw $exception;
                 }
             }
         }
-        return Corsel::find($id);
     }
 
     protected $casts = [

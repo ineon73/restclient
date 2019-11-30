@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Corcel\Model\Post as Corsel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
@@ -89,5 +90,50 @@ class DataModel extends Corcel implements DataAccess
         Log::info(['Подключен' => $is_connect, 'подключение к' => DB::connection()->getDatabaseName()]);
 
 
+    }
+
+
+
+
+
+
+
+for ($i = 0; $i < 3; $i++) {
+echo $i . PHP_EOL;
+try {
+sleep(2);
+echo "попытка подключения";
+var_dump(Corsel::find($id));
+} catch
+(\PDOException $exception) {
+    if ($i < 2) {
+        echo "первое эхо";
+    }
+    if ($i == 2) {
+        throw $exception;
+    }
+}
+        }
+
+
+}
+
+
+try {
+    if (Corsel::find($id)) {
+        return Corsel::find($id);
+    }
+} catch (\PDOException $e) {
+    echo "ну вот первая ошибка". PHP_EOL;
+    sleep(2);
+    try {
+        Corsel::find($id);
+    } catch (\PDOException $e) {
+        echo "вот и вторая ошибка". PHP_EOL;
+        try {
+            (Corsel::find($id));
+        } catch (\PDOException $e) {
+            throw $e;
+        }
     }
 }
