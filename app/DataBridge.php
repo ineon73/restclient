@@ -10,21 +10,40 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                return Corsel::find($id);
+                if (is_array($id)) {
+                    echo "array";
+                    return $this->getAll($id);
+                } else {
+                    echo "not array";
+                    return $this->getById($id);
+                }
             } catch
             (\PDOException $exception) {
                 sleep(2);
                 if ($i < 2) {
                     echo $exception;
-                }
-                else {
+                } else {
                     throw $exception;
                 }
             }
         }
     }
 
-    protected $casts = [
+    public function getById($id)
+    {
+        return Corsel::find($id);
+    }
+
+    public function getAll($id)
+    {
+        foreach ($id as $value => $key) {
+            $ar[$value] = $this->getById($key);
+        }
+        return $ar;
+    }
+
+    protected
+        $casts = [
         'post_author' => 'integer',
         'post_content' => 'string',
         'post_title' => 'string',
