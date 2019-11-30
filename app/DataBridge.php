@@ -4,13 +4,35 @@ namespace App;
 
 use Corcel\Model\Post as Corsel;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class DataBridge extends Corsel
 {
-    public static function get($id)
+    public function get($id)
     {
+        for ($i = 0; $i < 3; $i++) {
+            echo $i . PHP_EOL;
+            try {
+                if (DB::connection()->getDatabaseName()) {
+                    sleep(2);
+                    DB::reconnect();
+                    echo "попытка подключения";
+                } else {
+                    echo "подключен";
+                }
+            } catch
+            (\PDOException $exception) {
+                if ($i < 2) {
+                    echo "первое эхо";
+                }
+                if ($i == 2) {
+                    throw $exception;
+                }
+            }
+        }
         return Corsel::find($id);
     }
+
     protected $casts = [
         'post_author' => 'integer',
         'post_content' => 'string',
@@ -61,7 +83,6 @@ class DataBridge extends Corsel
         'leyka_recurrents_cancel_date' => 'date',
         '_leyka_donation_id_on_gateway_response' => 'integer',
     ];
-
 
 
 }

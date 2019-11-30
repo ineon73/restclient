@@ -12,26 +12,9 @@ class DataAccess extends Controller
 {
     public function index($id)
     {
-
         echo "<hr>";
-
-        for ($i = 0; $i < 3; $i++) {
-            echo $i . PHP_EOL;
-            try {
-                if (!(DB::connection()->getDatabaseName())) {
-                    sleep(2);
-                    DB::reconnect();
-                } else {
-                    var_dump(Model::get($id));
-                    break;
-                }
-            } catch
-            (\PDOException $exception) {
-                if ($i == 2) {
-                    echo $exception;
-                }
-            }
-        }
+        $mod = new Model();
+        var_dump($mod->get($id));
 
     }
 }
