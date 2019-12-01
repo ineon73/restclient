@@ -10,7 +10,7 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                if ($data['modifiedFrom'] != null) {
+                if (isset($data['modifiedFrom'])) {
                     return Corsel::whereDate('post_modified', '>=', $data['modifiedFrom'])->get();
                 } else {
                     return $this->getSomeById($data);
@@ -31,7 +31,7 @@ class DataBridge extends Corsel
     {
         $data = [];
         foreach ($ids as $key => $id) {
-            $data[$id] = Corsel::find($id);
+            $data[$key] = Corsel::find($id);
         }
         return $data;
     }
