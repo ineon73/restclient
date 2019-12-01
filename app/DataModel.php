@@ -137,3 +137,10 @@ try {
         }
     }
 }
+
+ if (isset($data['modifiedFrom']) and !isset($data['modifiedTo'])) {
+     echo 1;
+     return Corsel::whereDate('post_modified', '>=', $data['modifiedFrom'])->get();
+ } elseif (isset($data['modifiedTo'])) {
+     echo 2;
+     return Corsel::whereDate('post_modified', '>=', $data['modifiedFrom'])->whereDate('post_modified', '<=', $data['modifiedTo'])->get();
