@@ -12,7 +12,7 @@
 */
 
 
-Route::get('/api/{id}/{id1?}/{id2?}', 'DataAccess@index');
+Route::get('/api/{id}', 'DataAccess@index')->where('id', '.+');
 
 Route::any('/', function () {
    echo "Для получения апи использовать адрес ./api/(id)";

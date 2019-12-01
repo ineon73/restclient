@@ -10,13 +10,11 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                if (!is_array($data)) {
-                    echo "datetime";
-                    return Corsel::whereDate('post_date','>=', $data)->get();
+                if ($data['modifiedFrom'] != null) {
+                    return Corsel::whereDate('post_modified', '>=', $data['modifiedFrom'])->get();
+                } else {
+                    return $this->getSomeById($data);
                 }
-                    else {
-                        echo "ids";
-                return $this->getSomeById($data);}
             } catch
             (\PDOException $exception) {
                 sleep(2);
