@@ -23,6 +23,10 @@ class DataBridge extends Corsel
         }
     }
 
+    public function date($date)
+    {
+      return  Corsel::date("2019-11-09 10:14:44")->get();
+    }
 
     public function getSomeById($ids)
     {

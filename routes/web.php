@@ -11,10 +11,10 @@
 |
 */
 
-Route::get('/api/{id}', 'DataAccess@index');
+
+Route::get('/api/{id}/{id1?}/{id2?}', 'DataAccess@index');
+
 Route::any('/', function () {
    echo "Для получения апи использовать адрес ./api/(id)";
 });
-Route::get('/{test}', function () {
-    return view('greeting', ['name' => $test]);
-});
+
