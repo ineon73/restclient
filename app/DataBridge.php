@@ -6,11 +6,17 @@ use Corcel\Model\Post as Corsel;
 
 class DataBridge extends Corsel
 {
-    public function get($id)
+    public function get($data)
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                return $this->getSomeById($id);
+                if (!is_array($data)) {
+                    echo "datetime";
+                    return Corsel::whereDate('post_date','>=', $data)->get();
+                }
+                    else {
+                        echo "ids";
+                return $this->getSomeById($data);}
             } catch
             (\PDOException $exception) {
                 sleep(2);
@@ -21,11 +27,6 @@ class DataBridge extends Corsel
                 }
             }
         }
-    }
-
-    public function date($date)
-    {
-      return  Corsel::date("2019-11-09 10:14:44")->get();
     }
 
     public function getSomeById($ids)

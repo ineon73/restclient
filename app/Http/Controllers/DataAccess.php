@@ -9,13 +9,13 @@ class DataAccess extends Controller
 {
     public function index($id, $id1 = null, $id2 = null)
     {
-        $array[] = $id;
-        $array[] = $id1;
-        $array[] = $id2;
+        $date[] = $id;
+        $id1?:$date[] = $id1;
+        $id2?:$date[] = $id2;
         echo "<hr>";
         $mod = new Model();
         //dd($mod->get($array));
-        $test = '29.11.2019';
-        dd($mod->getSomeById($array));
+        $test = '2019/11/15';
+        var_dump($mod->get($date));
     }
 }
