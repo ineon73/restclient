@@ -10,13 +10,7 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                if (is_array($id)) {
-                    echo "array";
-                    return $this->getAll($id);
-                } else {
-                    echo "not array";
-                    return $this->getById($id);
-                }
+                return $this->getSomeById($id);
             } catch
             (\PDOException $exception) {
                 sleep(2);
@@ -29,17 +23,14 @@ class DataBridge extends Corsel
         }
     }
 
-    public function getById($id)
-    {
-        return Corsel::find($id);
-    }
 
-    public function getAll($id)
+    public function getSomeById($ids)
     {
-        foreach ($id as $value => $key) {
-            $ar[$value] = $this->getById($key);
+        $data = [];
+        foreach ($ids as $key => $id) {
+            $data[$id] = Corsel::find($id);
         }
-        return $ar;
+        return $data;
     }
 
     protected

@@ -9,10 +9,10 @@ class DataAccess extends Controller
 {
     public function index($id)
     {
-        $array = [48,45];
+        $array[] = 48;
         echo "<hr>";
         $mod = new Model();
-       var_dump($mod->get($array));
+       dd($mod->get($array));
 
     }
 }
