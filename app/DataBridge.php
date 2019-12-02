@@ -19,7 +19,7 @@ class DataBridge extends Corsel
                     if (isset($data['modifiedFrom'])) {
                         $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
                     }
-                    return $a->limit(5)->get();
+                    return $a->get();
                 } else {
                     return $this->getSomeById($data);
                 }
