@@ -19,6 +19,11 @@ class DataBridge extends Corsel
                     if (isset($data['modifiedFrom'])) {
                         $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
                     }
+                    if (isset($data['gateway'])){
+                        $a->hasMeta(['leyka_gateway' => $data['gateway']]);
+                    }
+                    if (isset($data['status'])) {
+                        $a->where('post_status', '=', $data['status']); }
                     return $a->get();
                 } else {
                     return $this->getSomeById($data);
