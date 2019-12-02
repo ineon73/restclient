@@ -10,17 +10,17 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
+                $a = Corsel::query();
                 if (!isset($data['id'])) {
-                    $a = Corsel::class;
-                    if ($data['modifiedTo']) {
-                        $a = $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
+
+                    if (isset($data['modifiedTo'])) {
+                        $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                     }
-                    if ($data['modifiedFrom']) {
-                        $a = $a->whereDate('post_modified', '<=', $data['modifiedTo']);
+                    if (isset($data['modifiedFrom'])) {
+                        $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
                     }
-                    return $a->get();
+                    return $a->limit(5)->get();
                 } else {
-                    echo 3;
                     return $this->getSomeById($data);
                 }
             } catch
