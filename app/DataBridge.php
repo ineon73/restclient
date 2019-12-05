@@ -92,15 +92,15 @@ echo "<hr>";
         echo   $relevant['status'] = $callback['id']->post_status;
         echo   $relevant['campaign_id'] = $callback['id']->leyka_campaign_id;
         echo   $relevant['currency_code '] = $callback['id']->leyka_donation_currency;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
+        echo   $relevant['recurring_id'] = $callback['id']->slug;
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_gateway;
+
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_main_curr_amount;
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_currency;
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_amount;
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_amount_total;
+        echo   $relevant['recurring_id'] = $callback['id']->leyka_payment_type;
+
 
     }
 
