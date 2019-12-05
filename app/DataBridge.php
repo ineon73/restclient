@@ -3,6 +3,7 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class DataBridge extends Corsel
 {
@@ -25,7 +26,8 @@ class DataBridge extends Corsel
                     if (isset($data['status'])) {
                         $a->where('post_status', '=', $data['status']);
                     }
-                  return  $a->get();
+                    $list = $a->get();
+                    return $this->filterForDate($list);
                 } else {
                     return $this->getSomeById($data);
                 }
@@ -48,29 +50,56 @@ class DataBridge extends Corsel
         foreach ($ids as $key => $id) {
             $data[$key] = Corsel::find($id);
         }
-        return $this->filterData($data);
+        return $this->filterForIds($data);
     }
 
-    public function filterData($callback)
+    public function filterForIds($callback)
     {
-        $relevant['email'] = (Array) $callback['id']->leyka_donor_email;
-        $relevant['full_name'] = (String) $callback['id']->leyka_donor_name;
-        $relevant['status'] = (String) $callback['id']->post_status;
-        $relevant['campaign_id'] = (Integer) $callback['id']->leyka_campaign_id;
-        $relevant['site_id'] = (String) $callback['id']->slug;
-        $relevant['acquirer_name'] = (String) $callback['id']->leyka_gateway;
-        $relevant['currency_code'] = (String) $callback['id']->leyka_donation_currency;
-        $relevant['summa_rur_gross'] = (Double) $callback['id']->leyka_donation_amount;
-        $relevant['summa_rur_net'] = (Double) $callback['id']->leyka_donation_amount_total;
-        $relevant['summa_cur_gross'] = (Double) $callback['id']->leyka_main_curr_amount;
-        $relevant['recurring'] = (Bool) $callback['id']->leyka_payment_type;
-        $gateway = unserialize($callback['id']->leyka_gateway_response);
-        $relevant['bin'] = (String) $gateway['CardLastFour'];
-        $relevant['CardExpDate'] = (String) $gateway['CardExpDate'];
-        $relevant['acquirer_id'] = (String) $gateway['TransactionId'];
+        $relevant = [];
+        foreach ($callback as $value => $item) {
+            foreach ($item as $key) {
+                $relevant['email'] = (Array)$key->leyka_donor_email;
+                $relevant['full_name'] = (String)$key->leyka_donor_name;
+                $relevant['status'] = (String)$key->post_status;
+                $relevant['campaign_id'] = (Integer)$key->leyka_campaign_id;
+                $relevant['site_id'] = (String)$key->slug;
+                $relevant['acquirer_name'] = (String)$key->leyka_gateway;
+                $relevant['currency_code'] = (String)$key->leyka_donation_currency;
+                $relevant['summa_rur_gross'] = (Double)$key->leyka_donation_amount;
+                $relevant['summa_rur_net'] = (Double)$key->leyka_donation_amount_total;
+                $relevant['summa_cur_gross'] = (Double)$key->leyka_main_curr_amount;
+                $relevant['recurring'] = (Bool)$key->leyka_payment_type;
+                $gateway = unserialize($key->leyka_gateway_response);
+                $relevant['bin'] = (String)$gateway['CardLastFour'];
+                $relevant['CardExpDate'] = (String)$gateway['CardExpDate'];
+                $relevant['acquirer_id'] = (String)$gateway['TransactionId'];
+            }
+        }
         return $relevant;
     }
 
+    public function filterForDate($callback)
+    {
+        $relevant = [];
+        foreach ($callback as $value => $item) {
+            $relevant['email'] = (Array)$item->leyka_donor_email;
+            $relevant['full_name'] = (String)$item->leyka_donor_name;
+            $relevant['status'] = (String)$item->post_status;
+            $relevant['campaign_id'] = (Integer)$item->leyka_campaign_id;
+            $relevant['site_id'] = (String)$item->slug;
+            $relevant['acquirer_name'] = (String)$item->leyka_gateway;
+            $relevant['currency_code'] = (String)$item->leyka_donation_currency;
+            $relevant['summa_rur_gross'] = (Double)$item->leyka_donation_amount;
+            $relevant['summa_rur_net'] = (Double)$item->leyka_donation_amount_total;
+            $relevant['summa_cur_gross'] = (Double)$item->leyka_main_curr_amount;
+            $relevant['recurring'] = (Bool)$item->leyka_payment_type;
+            $gateway = unserialize($item->leyka_gateway_response);
+            $relevant['bin'] = (String)$gateway['CardLastFour'];
+            $relevant['CardExpDate'] = (String)$gateway['CardExpDate'];
+            $relevant['acquirer_id'] = (String)$gateway['TransactionId'];
+        }
+        return $relevant;
+    }
 
     protected $casts = [
         'post_author' => 'integer',
