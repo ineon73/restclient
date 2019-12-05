@@ -25,7 +25,7 @@ class DataBridge extends Corsel
                     if (isset($data['status'])) {
                         $a->where('post_status', '=', $data['status']);
                     }
-                    return $a->get();
+                  return  $a->get();
                 } else {
                     return $this->getSomeById($data);
                 }
@@ -53,60 +53,26 @@ class DataBridge extends Corsel
 
     public function filterData($callback)
     {
-        $fields = [
-            'email' => 'Array',
-            'phone' => 'Array',
-            'bin' => 'String',
-            'ewallet' => 'String',
-            'campaign_id' => 'integer',
-            'campaign_name' => 'String',
-            'acquirer_id' => 'String',
-            'site_id' => 'String',
-            'full_name' => 'String',
-            'acquirer_name' => 'String',
-            'comment' => 'String',
-            'summa_cur_net' => 'double',
-            'summa_cur_gross' => 'double',
-            'currency_code' => 'String',
-            'summa_rur_gross' => 'double',
-            'summa_rur_net' => 'double',
-            'recurring' => 'bool',
-            'recurring_id' => 'String',
-            'recurring_first' => 'integer',
-            'utm_campaign' => 'String',
-            'utm_source' => 'String',
-            'status' => 'String',
-            'address' => 'String',
-            'signout' => 'bool',
-            'raw json' => 'json',
-            'reject_reason' => 'String',
-            'warning_message' => 'String',
-            'upload_id' => 'String',
-        ];
-
-echo "<hr>";
-
-    echo $relevant['email']  = $callback['id']->leyka_donor_email;
-     echo   $relevant['full_name']  = $callback['id']->leyka_donor_name;
-     echo   $relevant['recurring_id'] = $callback['id']->cp_recurring_id;
-        echo   $relevant['status'] = $callback['id']->post_status;
-        echo   $relevant['campaign_id'] = $callback['id']->leyka_campaign_id;
-        echo   $relevant['currency_code '] = $callback['id']->leyka_donation_currency;
-        echo   $relevant['recurring_id'] = $callback['id']->slug;
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_gateway;
-
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_main_curr_amount;
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_currency;
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_amount;
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_donation_amount_total;
-        echo   $relevant['recurring_id'] = $callback['id']->leyka_payment_type;
-
-
+        $relevant['email'] = (Array) $callback['id']->leyka_donor_email;
+        $relevant['full_name'] = (String) $callback['id']->leyka_donor_name;
+        $relevant['status'] = (String) $callback['id']->post_status;
+        $relevant['campaign_id'] = (Integer) $callback['id']->leyka_campaign_id;
+        $relevant['site_id'] = (String) $callback['id']->slug;
+        $relevant['acquirer_name'] = (String) $callback['id']->leyka_gateway;
+        $relevant['currency_code'] = (String) $callback['id']->leyka_donation_currency;
+        $relevant['summa_rur_gross'] = (Double) $callback['id']->leyka_donation_amount;
+        $relevant['summa_rur_net'] = (Double) $callback['id']->leyka_donation_amount_total;
+        $relevant['summa_cur_gross'] = (Double) $callback['id']->leyka_main_curr_amount;
+        $relevant['recurring'] = (Bool) $callback['id']->leyka_payment_type;
+        $gateway = unserialize($callback['id']->leyka_gateway_response);
+        $relevant['bin'] = (String) $gateway['CardLastFour'];
+        $relevant['CardExpDate'] = (String) $gateway['CardExpDate'];
+        $relevant['acquirer_id'] = (String) $gateway['TransactionId'];
+        return $relevant;
     }
 
 
-
-    protected  $casts = [
+    protected $casts = [
         'post_author' => 'integer',
         'post_content' => 'string',
         'post_title' => 'string',
