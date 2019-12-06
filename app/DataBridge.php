@@ -24,7 +24,8 @@ class DataBridge extends Corsel
                     $a->where('post_status', '=', $data['status']);
                 }
                 if (isset($data['id'])) {
-                    $a->where('id', '=', $data['id']);
+                    foreach ($data['id'] as $id) {
+                    $a->orwhere('id', '=', $id); }
                 }
                 return $this->filterForData($a->get());
             } catch
