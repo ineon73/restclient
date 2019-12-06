@@ -144,3 +144,15 @@ try {
  } elseif (isset($data['modifiedTo'])) {
      echo 2;
      return Corsel::whereDate('post_modified', '>=', $data['modifiedFrom'])->whereDate('post_modified', '<=', $data['modifiedTo'])->get();
+
+
+     $relevant[]['bin'] = (String)$gateway['CardLastFour'];
+
+
+
+
+
+
+
+
+

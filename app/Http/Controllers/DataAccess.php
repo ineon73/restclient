@@ -13,6 +13,6 @@ class DataAccess extends Controller
         echo "<hr>";
         $mod = new Model();
         //dd($mod->get($array));
-        var_dump($mod->get($data));
+        dump($mod->get($data));
     }
 }

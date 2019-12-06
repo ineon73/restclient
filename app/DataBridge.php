@@ -3,7 +3,6 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class DataBridge extends Corsel
 {
@@ -12,25 +11,22 @@ class DataBridge extends Corsel
         for ($i = 0; $i < 3; $i++) {
             try {
                 $a = Corsel::query();
-                if (!isset($data['id'])) {
-
-                    if (isset($data['modifiedTo'])) {
-                        $a->whereDate('post_modified', '<=', $data['modifiedTo']);
-                    }
-                    if (isset($data['modifiedFrom'])) {
-                        $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
-                    }
-                    if (isset($data['gateway'])) {
-                        $a->hasMeta(['leyka_gateway' => $data['gateway']]);
-                    }
-                    if (isset($data['status'])) {
-                        $a->where('post_status', '=', $data['status']);
-                    }
-                    $list = $a->get();
-                    return $this->filterForDate($list);
-                } else {
-                    return $this->getSomeById($data);
+                if (isset($data['modifiedTo'])) {
+                    $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                 }
+                if (isset($data['modifiedFrom'])) {
+                    $a->whereDate('post_modified', '>=', $data['modifiedFrom']);
+                }
+                if (isset($data['gateway'])) {
+                    $a->hasMeta(['leyka_gateway' => $data['gateway']]);
+                }
+                if (isset($data['status'])) {
+                    $a->where('post_status', '=', $data['status']);
+                }
+                if (isset($data['id'])) {
+                    $a->where('id', '=', $data['id']);
+                }
+                return $this->filterForData($a->get());
             } catch
             (\PDOException $exception) {
                 sleep(2);
@@ -50,53 +46,32 @@ class DataBridge extends Corsel
         foreach ($ids as $key => $id) {
             $data[$key] = Corsel::find($id);
         }
-        return $this->filterForIds($data);
+        return $data;
     }
 
-    public function filterForIds($callback)
-    {
-        $relevant = [];
-        foreach ($callback as $value => $item) {
-            foreach ($item as $key) {
-                $relevant['email'] = (Array)$key->leyka_donor_email;
-                $relevant['full_name'] = (String)$key->leyka_donor_name;
-                $relevant['status'] = (String)$key->post_status;
-                $relevant['campaign_id'] = (Integer)$key->leyka_campaign_id;
-                $relevant['site_id'] = (String)$key->slug;
-                $relevant['acquirer_name'] = (String)$key->leyka_gateway;
-                $relevant['currency_code'] = (String)$key->leyka_donation_currency;
-                $relevant['summa_rur_gross'] = (Double)$key->leyka_donation_amount;
-                $relevant['summa_rur_net'] = (Double)$key->leyka_donation_amount_total;
-                $relevant['summa_cur_gross'] = (Double)$key->leyka_main_curr_amount;
-                $relevant['recurring'] = (Bool)$key->leyka_payment_type;
-                $gateway = unserialize($key->leyka_gateway_response);
-                $relevant['bin'] = (String)$gateway['CardLastFour'];
-                $relevant['CardExpDate'] = (String)$gateway['CardExpDate'];
-                $relevant['acquirer_id'] = (String)$gateway['TransactionId'];
-            }
-        }
-        return $relevant;
-    }
 
-    public function filterForDate($callback)
+    public function filterForData($callback)
     {
         $relevant = [];
-        foreach ($callback as $value => $item) {
-            $relevant['email'] = (Array)$item->leyka_donor_email;
-            $relevant['full_name'] = (String)$item->leyka_donor_name;
-            $relevant['status'] = (String)$item->post_status;
-            $relevant['campaign_id'] = (Integer)$item->leyka_campaign_id;
-            $relevant['site_id'] = (String)$item->slug;
-            $relevant['acquirer_name'] = (String)$item->leyka_gateway;
-            $relevant['currency_code'] = (String)$item->leyka_donation_currency;
-            $relevant['summa_rur_gross'] = (Double)$item->leyka_donation_amount;
-            $relevant['summa_rur_net'] = (Double)$item->leyka_donation_amount_total;
-            $relevant['summa_cur_gross'] = (Double)$item->leyka_main_curr_amount;
-            $relevant['recurring'] = (Bool)$item->leyka_payment_type;
-            $gateway = unserialize($item->leyka_gateway_response);
-            $relevant['bin'] = (String)$gateway['CardLastFour'];
-            $relevant['CardExpDate'] = (String)$gateway['CardExpDate'];
-            $relevant['acquirer_id'] = (String)$gateway['TransactionId'];
+        $i = 0;
+        foreach ($callback as $value) {
+            $relevant[$i]["slug"] = ($value->slug);
+            $relevant[$i]['email'] = (Array)$value->leyka_donor_email;
+            $relevant[$i]['full_name'] = (String)$value->leyka_donor_name;
+            $relevant[$i]['status'] = (String)$value->post_status;
+            $relevant[$i]['campaign_id'] = (Integer)$value->leyka_campaign_id;
+            $relevant[$i]['site_id'] = (String)$value->slug;
+            $relevant[$i]['acquirer_code'] = (String)$value->leyka_gateway;
+            $relevant[$i]['currency_code'] = (String)$value->leyka_donation_currency;
+            $relevant[$i]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
+            $relevant[$i]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
+            $relevant[$i]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
+            $relevant[$i]['recurring'] = (Bool)$value->_rebilling_is_active;
+            $gateway = unserialize($value->leyka_gateway_response);
+            $relevant[$i]['bin'] = (String)$gateway['CardLastFour'];
+            $relevant[$i]['CardExpDate'] = (String)$gateway['CardExpDate'];
+            $relevant[$i]['acquirer_id'] = (String)$gateway['TransactionId'];
+            $i++;
         }
         return $relevant;
     }
