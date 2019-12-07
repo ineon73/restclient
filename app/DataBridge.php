@@ -10,6 +10,7 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
+
                 $a = Corsel::query();
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);
@@ -25,9 +26,11 @@ class DataBridge extends Corsel
                 }
                 if (isset($data['id'])) {
                     foreach ($data['id'] as $id) {
-                    $a->orwhere('id', '=', $id); }
+                        $a->orwhere('id', '=', $id);
+                    }
                 }
                 return $this->filterForData($a->get());
+
             } catch
             (\PDOException $exception) {
                 sleep(2);
@@ -40,39 +43,29 @@ class DataBridge extends Corsel
         }
     }
 
-    public
-    function getSomeById($ids)
-    {
-        $data = [];
-        foreach ($ids as $key => $id) {
-            $data[$key] = Corsel::find($id);
-        }
-        return $data;
-    }
-
 
     public function filterForData($callback)
     {
         $relevant = [];
-        $i = 0;
         foreach ($callback as $value) {
-            $relevant[$i]["slug"] = ($value->slug);
-            $relevant[$i]['email'] = (Array)$value->leyka_donor_email;
-            $relevant[$i]['full_name'] = (String)$value->leyka_donor_name;
-            $relevant[$i]['status'] = (String)$value->post_status;
-            $relevant[$i]['campaign_id'] = (Integer)$value->leyka_campaign_id;
-            $relevant[$i]['site_id'] = (String)$value->slug;
-            $relevant[$i]['acquirer_code'] = (String)$value->leyka_gateway;
-            $relevant[$i]['currency_code'] = (String)$value->leyka_donation_currency;
-            $relevant[$i]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
-            $relevant[$i]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
-            $relevant[$i]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
-            $relevant[$i]['recurring'] = (Bool)$value->_rebilling_is_active;
+            $relevant[$value->ID]['email'] = (Array)$value->leyka_donor_email;
+            $relevant[$value->ID]['full_name'] = (String)$value->leyka_donor_name;
+            $relevant[$value->ID]['status'] = (String)$value->post_status;
+            $relevant[$value->ID]['campaign_id'] = (Integer)$value->leyka_campaign_id;
+            $relevant[$value->ID]['site_id'] = (String)$value->slug;
+            $relevant[$value->ID]['acquirer_code'] = (String)$value->leyka_gateway;
+            $relevant[$value->ID]['currency_code'] = (String)$value->leyka_donation_currency;
+            $relevant[$value->ID]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
+            $relevant[$value->ID]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
+            $relevant[$value->ID]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
+            $relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
             $gateway = unserialize($value->leyka_gateway_response);
-            $relevant[$i]['bin'] = (String)$gateway['CardLastFour'];
-            $relevant[$i]['CardExpDate'] = (String)$gateway['CardExpDate'];
-            $relevant[$i]['acquirer_id'] = (String)$gateway['TransactionId'];
-            $i++;
+            if (is_array($gateway) and isset($gateway['CardLastFour'])) {
+                $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
+                $relevant[$value->ID]['CardExpDate'] = (String)$gateway['CardExpDate'];
+                $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
+                $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
+            }
         }
         return $relevant;
     }
