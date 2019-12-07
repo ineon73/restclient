@@ -29,7 +29,7 @@ class DataBridge extends Corsel
                         $a->orwhere('id', '=', $id);
                     }
                 }
-                return $this->filterForData($a->get());
+                return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
 
             } catch
             (\PDOException $exception) {
@@ -66,6 +66,7 @@ class DataBridge extends Corsel
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
+            $relevant[$value->ID]['raw'] = $value->toJson(0);
         }
         return $relevant;
     }
