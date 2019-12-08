@@ -45,7 +45,6 @@ class DataBridge extends Corsel
         }
     }
 
-
     public function filterForData($callback)
     {
         $relevant = [];
@@ -61,6 +60,7 @@ class DataBridge extends Corsel
             $relevant[$value->ID]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
             $relevant[$value->ID]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
             $relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
+            $relevant[$value->ID]['subscribe'] = $value->leyka_donor_subscribed;
             $gateway = unserialize($value->leyka_gateway_response);
             if (is_array($gateway) and isset($gateway['CardLastFour'])) {
                 $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
@@ -68,7 +68,7 @@ class DataBridge extends Corsel
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
-            $relevant[$value->ID]['raw'] = $value->toJson(0);
+            $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
         }
         return $relevant;
     }
@@ -123,6 +123,4 @@ class DataBridge extends Corsel
         'leyka_recurrents_cancel_date' => 'date',
         '_leyka_donation_id_on_gateway_response' => 'integer',
     ];
-
-
 }
