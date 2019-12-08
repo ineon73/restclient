@@ -24,11 +24,14 @@ class DataBridge extends Corsel
                     $a->where('post_status', '=', $data['status']);
                 }
                 if (isset($data['id'])) {
-                    foreach ($data['id'] as $id) {
+                    foreach ((array)$data['id'] as $id) {
                         $a->orwhere('id', '=', $id);
                     }
                 }
-                return $this->filterForData($a->orderBy('post_modified', 'asc')->limit(10)->get());
+                if (isset($data['limit'])) {
+                    $a->limit($data['limit']);
+                }
+                return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
 
             } catch
             (\PDOException $exception) {

@@ -20,12 +20,12 @@ class DataAccess extends Controller
         } else echo "требуется request параметры";
     }
 
-    public function db()
+   /* public function db()
     {
         $array = ['mysql1', 'wordpress'];
 $data['conn'] = 'test';
 
         $test2 = new Test2();
         $test2->get($data);
-    }
+    }*/
 }
