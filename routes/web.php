@@ -13,7 +13,7 @@
 
 
 Route::get('/api/', 'DataAccess@index');
-
+Route::get('/db/', 'DataAccess@db');
 Route::any('/', function () {
    echo "Для получения апи использовать адрес /api/?id[]=id";
 });

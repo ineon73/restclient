@@ -28,7 +28,7 @@ class DataBridge extends Corsel
                         $a->orwhere('id', '=', $id);
                     }
                 }
-                return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
+                return $this->filterForData($a->orderBy('post_modified', 'asc')->limit(10)->get());
 
             } catch
             (\PDOException $exception) {
