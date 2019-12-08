@@ -10,7 +10,6 @@ class DataBridge extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-
                 $a = Corsel::query();
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);

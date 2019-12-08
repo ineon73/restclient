@@ -9,10 +9,12 @@ class DataAccess extends Controller
 {
     public function index(Request $request)
     {
-      $data = $request->all();
+        $data = $request->all();
         echo "<hr>";
         $mod = new Model();
         //dd($mod->get($array));
-        dump($mod->get($data));
+        if ($data != null) {
+            dump($mod->get($data));
+        } else echo "требуется request параметры";
     }
 }
