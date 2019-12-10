@@ -68,7 +68,9 @@ class DataBridge extends Corsel
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
+            $relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
+            $relevant[$value->ID]['type'] = $value->type;
         }
         return $relevant;
     }
