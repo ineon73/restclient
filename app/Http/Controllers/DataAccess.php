@@ -14,14 +14,14 @@ class DataAccess extends Controller
     {
         $data = $request->all();
         if ($data != null) {
-            if ($data['type'] == 'd') {
-                $mod = new Donation();
-                dump($mod->get($data));
-            } else {
+            if (isset($data['type']) and $data['type'] == 'c') {
                 $mod = new Campaign();
                 dump($mod->get($data));
+            } else {
+                $mod = new Donation();
+                dump($mod->get($data));
             }
-        } else echo "требуется request параметры. Для donation \"?type=d\"";
+        } else echo "требуется request параметры. Для campaign \"?type=c\"";
     }
 
     /* public function db()
