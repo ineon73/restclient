@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\DataBridge as Donation;
+use App\DonationModel as Donation;
 use App\CampaignModel as Campaign;
 use App\Test1 as Test1;
 use App\Test2 as Test2;
