@@ -7,6 +7,7 @@ use Corcel\Model\Post as Corsel;
 class DonationModel extends Corsel
 {
     protected $postType = 'leyka_donation';
+
     public function get($data)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -56,6 +57,7 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['campaign_id'] = (Integer)$value->leyka_campaign_id;
             $relevant[$value->ID]['site_id'] = (String)$value->slug;
             $relevant[$value->ID]['acquirer_code'] = (String)$value->leyka_gateway;
+            $relevant[$value->ID]['payment_method'] = (String)$value->leyka_payment_method;
             $relevant[$value->ID]['payment_type'] = (String)$value->leyka_payment_type;
             $relevant[$value->ID]['currency_code'] = (String)$value->leyka_donation_currency;
             $relevant[$value->ID]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
@@ -70,8 +72,12 @@ class DonationModel extends Corsel
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
+            if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
             $relevant[$value->ID]['all'] = $value->toArray();
-            $relevant[$value->ID]['date'] = ['post_date' => $value->post_date, 'post_date_gmt' => $value->post_date_gmt, 'post_modified' => $value->post_modified, 'post_modified_gmt' => $value->post_modified_gmt];
+            $relevant[$value->ID]['post_date'] = $value->post_date;
+            $relevant[$value->ID]['post_date_gmt'] = $value->post_date_gmt;
+            $relevant[$value->ID]['post_modified'] = $value->post_modified;
+            $relevant[$value->ID]['post_modified_gmt'] = $value->post_modified_gmt;
             $relevant[$value->ID]['comment'] = (String)$value->title;
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
             $relevant[$value->ID]['recurring_id'] = (String)$value->_cp_recurring_id;
