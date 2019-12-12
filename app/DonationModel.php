@@ -63,7 +63,7 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
             $relevant[$value->ID]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
             $relevant[$value->ID]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
-            //$relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
+            $relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
             $relevant[$value->ID]['recurring_id'] = (String)$value->_cp_recurring_id;
             $relevant[$value->ID]['subscribe'] = $value->leyka_donor_subscribed;
             $gateway = unserialize($value->leyka_gateway_response);
@@ -74,6 +74,10 @@ class DonationModel extends Corsel
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
             if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
+            /*if (isset($value->meta->leyka_gateway_response->_expiryYear)) {
+                $relevant[$value->ID]['CardExpDate'] = (String)$value->meta->leyka_gateway_response->_expiryYear . "/" . (String)substr($value->meta->leyka_gateway_response->_expiryMonth, 1,2);
+                $relevant[$value->ID]['bin'] = (String)$value->meta->leyka_gateway_response->_last4;
+            }*/
             //$relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['post_date'] = $value->post_date;
             $relevant[$value->ID]['post_date_gmt'] = $value->post_date_gmt;
@@ -81,8 +85,6 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['post_modified_gmt'] = $value->post_modified_gmt;
             $relevant[$value->ID]['comment'] = (String)$value->title;
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
-
-
         }
         return $relevant;
     }
