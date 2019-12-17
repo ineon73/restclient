@@ -31,6 +31,9 @@ class DonationModel extends Corsel
                 if (isset($data['limit'])) {
                     $a->limit($data['limit']);
                 }
+                if (isset($data['campaign_id'])) {
+                    $a->hasMeta(['leyka_campaign_id' => $data['campaign_id']]);
+                }
                 return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
 
             } catch
