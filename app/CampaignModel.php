@@ -6,11 +6,9 @@ use Corcel\Model\Post as Corsel;
 
 class CampaignModel extends Corsel
 {
-    protected $postType = 'leyka_campaign';
-
     public function get($data)
     {
-        $a = Corsel::query();
+        $a = Corsel::query()->type('leyka_campaign');
         if (isset($data['modifiedTo'])) {
             $a->whereDate('post_modified', '<=', $data['modifiedTo']);
         }
@@ -22,7 +20,9 @@ class CampaignModel extends Corsel
         }
         return $this->filterForData($a->get());
     }
-    public function filterForData($callback) {
+
+    public function filterForData($callback)
+    {
         $data = [];
         foreach ($callback as $value) {
             $data[$value->ID]['Id'] = $value->ID;

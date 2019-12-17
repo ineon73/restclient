@@ -6,13 +6,11 @@ use Corcel\Model\Post as Corsel;
 
 class DonationModel extends Corsel
 {
-    protected $postType = 'leyka_donation';
-
     public function get($data)
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                $a = Corsel::query();
+                $a = Corsel::query()->type('leyka_donation');;
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                 }
