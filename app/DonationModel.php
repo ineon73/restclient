@@ -10,7 +10,7 @@ class DonationModel extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                $a = Corsel::query()->type('leyka_donation');;
+                $a = Corsel::query()->hasMeta('leyka_donation');;
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                 }
@@ -52,22 +52,41 @@ class DonationModel extends Corsel
     {
         $relevant = [];
         foreach ($callback as $value) {
+            $relevant[$value->ID]['email'] = "";
             $relevant[$value->ID]['email'] = (Array)$value->leyka_donor_email;
+            $relevant[$value->ID]['full_name'] = "";
             $relevant[$value->ID]['full_name'] = (String)$value->leyka_donor_name;
+            $relevant[$value->ID]['status'] = "";
             $relevant[$value->ID]['status'] = (String)$value->post_status;
+            $relevant[$value->ID]['campaign_id'] = "";
             $relevant[$value->ID]['campaign_id'] = (Integer)$value->leyka_campaign_id;
+            $relevant[$value->ID]['site_id'] = "";
             $relevant[$value->ID]['site_id'] = (String)$value->slug;
+            $relevant[$value->ID]['acquirer_code'] = "";
             $relevant[$value->ID]['acquirer_code'] = (String)$value->leyka_gateway;
+            $relevant[$value->ID]['payment_method'] = "";
             $relevant[$value->ID]['payment_method'] = (String)$value->leyka_payment_method;
+            $relevant[$value->ID]['payment_type'] = "";
             $relevant[$value->ID]['payment_type'] = (String)$value->leyka_payment_type;
+            $relevant[$value->ID]['currency_code'] = "";
             $relevant[$value->ID]['currency_code'] = (String)$value->leyka_donation_currency;
+            $relevant[$value->ID]['summa_rur_gross'] = "";
             $relevant[$value->ID]['summa_rur_gross'] = (Double)$value->leyka_donation_amount;
+            $relevant[$value->ID]['summa_rur_net'] = "";
             $relevant[$value->ID]['summa_rur_net'] = (Double)$value->leyka_donation_amount_total;
+            $relevant[$value->ID]['summa_cur_gross'] = "";
             $relevant[$value->ID]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
+            $relevant[$value->ID]['recurring'] = "";
             $relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
+            $relevant[$value->ID]['recurring_id'] = "";
             $relevant[$value->ID]['recurring_id'] = (String)$value->_cp_recurring_id;
+            $relevant[$value->ID]['subscribe'] = "";
             $relevant[$value->ID]['subscribe'] = $value->leyka_donor_subscribed;
-            $gateway = unserialize($value->leyka_gateway_response);
+            $relevant[$value->ID]['bin'] = "";
+            $relevant[$value->ID]['CardExpDate'] = "";
+            $relevant[$value->ID]['acquirer_id'] = "";
+            $relevant[$value->ID]['cardholder'] = "";
+            $gateway = @unserialize($value->leyka_gateway_response);
             if (is_array($gateway) and isset($gateway['CardLastFour'])) {
                 $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
                 $relevant[$value->ID]['CardExpDate'] = (String)$gateway['CardExpDate'];
@@ -80,11 +99,17 @@ class DonationModel extends Corsel
                 $relevant[$value->ID]['bin'] = (String)$value->meta->leyka_gateway_response->_last4;
             }*/
             //$relevant[$value->ID]['all'] = $value->toArray();
+            $relevant[$value->ID]['post_date'] = "";
             $relevant[$value->ID]['post_date'] = $value->post_date;
+            $relevant[$value->ID]['post_date_gmt'] = "";
             $relevant[$value->ID]['post_date_gmt'] = $value->post_date_gmt;
+            $relevant[$value->ID]['post_modified'] = "";
             $relevant[$value->ID]['post_modified'] = $value->post_modified;
+            $relevant[$value->ID]['post_modified_gmt'] = "";
             $relevant[$value->ID]['post_modified_gmt'] = $value->post_modified_gmt;
+            $relevant[$value->ID]['comment'] = "";
             $relevant[$value->ID]['comment'] = (String)$value->title;
+            $relevant[$value->ID]['raw'] = "";
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
         }
         return $relevant;
@@ -116,8 +141,8 @@ class DonationModel extends Corsel
         'id' => 'integer',
         'date' => 'datetime',
         'date_gmt' => 'datetime',
-        'modified' => 'datetime',
-        'modified_gmt' => 'datetime',
+        'post_modified' => 'datetime',
+        'post_modified_gmt' => 'datetime',
         'slug' => 'string',
         'status' => 'string',
         'type' => 'string',
