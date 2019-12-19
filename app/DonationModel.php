@@ -10,7 +10,7 @@ class DonationModel extends Corsel
     {
         for ($i = 0; $i < 3; $i++) {
             try {
-                $a = Corsel::query()->hasMeta('leyka_donation');;
+                $a = Corsel::query()->type('leyka_donation');
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                 }
@@ -24,9 +24,7 @@ class DonationModel extends Corsel
                     $a->where('post_status', '=', $data['status']);
                 }
                 if (isset($data['id'])) {
-                    foreach ((array)$data['id'] as $id) {
-                        $a->orwhere('id', '=', $id);
-                    }
+                    $a->whereIn('id', $data['id']);
                 }
                 if (isset($data['limit'])) {
                     $a->limit($data['limit']);
@@ -35,7 +33,6 @@ class DonationModel extends Corsel
                     $a->hasMeta(['leyka_campaign_id' => $data['campaign_id']]);
                 }
                 return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
-
             } catch
             (\PDOException $exception) {
                 sleep(2);

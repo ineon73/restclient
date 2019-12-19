@@ -8,7 +8,7 @@ class CampaignModel extends Corsel
 {
     public function get($data)
     {
-        $a = Corsel::query()->hasMeta('leyka_campaign');
+        $a = Corsel::query()->type('leyka_campaign');
         if (isset($data['modifiedTo'])) {
             $a->whereDate('post_modified', '<=', $data['modifiedTo']);
         }
