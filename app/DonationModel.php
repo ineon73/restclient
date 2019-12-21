@@ -84,6 +84,7 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['acquirer_id'] = "";
             $relevant[$value->ID]['cardholder'] = "";
             $gateway = @unserialize($value->leyka_gateway_response);
+            $payment_log = @unserialize($value->_paypal_payment_log);
             if (is_array($gateway) and isset($gateway['InvId'])) {
                 $relevant[$value->ID]['acquirer_id'] = $gateway['InvId'];
             }
@@ -96,8 +97,7 @@ class DonationModel extends Corsel
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
-            if (isset($value->meta->_paypal_payment_log)) {
-                $payment_log = @unserialize($value->_paypal_payment_log);
+            if (isset($payment_log['1'])) {
                 $relevant[$value->ID]['cardholder'] = $payment_log['1']['result']['FIRSTNAME'] . ' ' . $payment_log['1']['result']['LASTNAME'];
             }
             if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
