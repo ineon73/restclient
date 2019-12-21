@@ -3,13 +3,14 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
-use App\Connectors\Bx24Webhook\BxLogs\BxLog as Log;
+use App\BxLog as Log;
 class CampaignModel extends Corsel
 {
     protected $postType = 'leyka_campaign'; //leyka_campaign';
 
     public function get($data)
     {
+        $log = new Log();
         $a = Corsel::query();   // type('leyka_campaign')->take(3)->get(); //::
         if (isset($data['modifiedTo'])) {
             $a->whereDate('post_modified', '<=', $data['modifiedTo']);
@@ -33,6 +34,7 @@ class CampaignModel extends Corsel
         }
         //dd($a);
         $a->where('post_type', 'leyka_campaign');
+        $log->log_debug(json_encode($a->getQuery()));
         return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
     }
 
@@ -46,6 +48,9 @@ class CampaignModel extends Corsel
             //echo 'value<pre>';print_r($value);echo '</pre>';
         }
         // dd($callback->toArray());
+        $debug = json_encode($data[$value->ID]['all']);
+        $log = new Log();
+        $log->log_debug($debug);
         return $data;
     }
 }
