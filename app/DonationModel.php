@@ -74,7 +74,9 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['summa_cur_gross'] = "";
             $relevant[$value->ID]['summa_cur_gross'] = (Double)$value->leyka_main_curr_amount;
             $relevant[$value->ID]['recurring'] = "";
-            $relevant[$value->ID]['recurring'] = (Bool)$value->_rebilling_is_active;
+            if ($value->leyka_payment_type == 'rebill') {
+                $relevant[$value->ID]['recurring'] = true;
+            }
             $relevant[$value->ID]['recurring_id'] = "";
             $relevant[$value->ID]['recurring_id'] = (String)$value->_cp_recurring_id;
             $relevant[$value->ID]['subscribe'] = "";
@@ -105,7 +107,7 @@ class DonationModel extends Corsel
                 $relevant[$value->ID]['CardExpDate'] = (String)$gateway['_expiryYear'] . "/" . (String)substr($gateway['_expiryMonth'], 1, 2);
                 $relevant[$value->ID]['bin'] = (String)$gateway['_last4'];
             }
-            //$relevant[$value->ID]['all'] = $value->toArray();
+            $relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['post_date'] = "";
             $relevant[$value->ID]['post_date'] = $value->post_date;
             $relevant[$value->ID]['post_date_gmt'] = "";
