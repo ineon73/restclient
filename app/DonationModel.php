@@ -24,7 +24,7 @@ class DonationModel extends Corsel
                     $a->where('post_status', '=', $data['status']);
                 }
                 if (isset($data['id'])) {
-                    $a->whereIn('id', $data['id']);
+                    $a->whereIn('id', (array)$data['id']);
                 }
                 if (isset($data['limit'])) {
                     $a->limit($data['limit']);
@@ -84,17 +84,27 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['acquirer_id'] = "";
             $relevant[$value->ID]['cardholder'] = "";
             $gateway = @unserialize($value->leyka_gateway_response);
+            if (is_array($gateway) and isset($gateway['InvId'])) {
+                $relevant[$value->ID]['acquirer_id'] = $gateway['InvId'];
+            }
+            if (is_array($gateway) and isset($gateway['Reason'])) {
+                $relevant[$value->ID]['Reason'] = $gateway['Reason'];
+            }
             if (is_array($gateway) and isset($gateway['CardLastFour'])) {
                 $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
                 $relevant[$value->ID]['CardExpDate'] = (String)$gateway['CardExpDate'];
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
             }
+            if (isset($value->meta->_paypal_payment_log)) {
+                $payment_log = @unserialize($value->_paypal_payment_log);
+                $relevant[$value->ID]['cardholder'] = $payment_log['1']['result']['FIRSTNAME'] . ' ' . $payment_log['1']['result']['LASTNAME'];
+            }
             if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
-            /*if (isset($value->meta->leyka_gateway_response->_expiryYear)) {
-                $relevant[$value->ID]['CardExpDate'] = (String)$value->meta->leyka_gateway_response->_expiryYear . "/" . (String)substr($value->meta->leyka_gateway_response->_expiryMonth, 1,2);
-                $relevant[$value->ID]['bin'] = (String)$value->meta->leyka_gateway_response->_last4;
-            }*/
+            if (isset($gateway['_expiryYear'])) {
+                $relevant[$value->ID]['CardExpDate'] = (String)$gateway['_expiryYear'] . "/" . (String)substr($gateway['_expiryMonth'], 1, 2);
+                $relevant[$value->ID]['bin'] = (String)$gateway['_last4'];
+            }
             //$relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['post_date'] = "";
             $relevant[$value->ID]['post_date'] = $value->post_date;
