@@ -22,6 +22,9 @@ class DonationModel extends Corsel
                 if (isset($data['gateway'])) {
                     $a->hasMeta(['leyka_gateway' => $data['gateway']]);
                 }
+                if (isset($data['method'])) {
+                    $a->hasMeta(['leyka_payment_method' => $data['method']]);
+                }
                 if (isset($data['status'])) {
                     $a->where('post_status', '=', $data['status']);
                 }
@@ -106,12 +109,15 @@ class DonationModel extends Corsel
             if (isset($payment_log['1'])) {
                 $relevant[$value->ID]['cardholder'] = $payment_log['1']['result']['FIRSTNAME'] . ' ' . $payment_log['1']['result']['LASTNAME'];
             }
-            if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
-            if (isset($gateway['_expiryYear'])) {
+            //if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
+            /*if (isset($gateway['_expiryYear'])) {
                 $relevant[$value->ID]['CardExpDate'] = (String)$gateway['_expiryYear'] . "/" . (String)substr($gateway['_expiryMonth'], 1, 2);
                 $relevant[$value->ID]['bin'] = (String)$gateway['_last4'];
-            }
-            $relevant[$value->ID]['all'] = $value->toArray();
+            }*/
+            //$gateway=$this->fixObject($gateway);
+            //$gateway= $this->casttoclass('YandexCheckout\Request\Payments\PaymentResponse',$gateway);
+            //dd($gateway);
+            //$relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['post_date'] = "";
             $relevant[$value->ID]['post_date'] = $value->post_date;
             $relevant[$value->ID]['post_date_gmt'] = "";
@@ -124,13 +130,24 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['comment'] = (String)$value->title;
             $relevant[$value->ID]['raw'] = "";
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
-
             $debug = json_encode($relevant[$value->ID]['all']);
             $log = new Log();
             $log->log_debug($debug);
         }
 
         return $relevant;
+    }
+
+    function casttoclass($class, $object)
+    {
+        return unserialize(preg_replace('/^O:\d+:"[^"]++"/', 'O:' . strlen($class) . ':"' . $class . '"', serialize($object)));
+    }
+
+    function fixObject(&$object)
+    {
+        if (!is_object($object) && gettype($object) == 'object')
+            return ($object = unserialize(serialize($object)));
+        return $object;
     }
 
     protected $casts = [
