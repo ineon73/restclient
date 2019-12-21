@@ -3,7 +3,7 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
-
+use App\Connectors\Bx24Webhook\BxLogs\BxLog as Log;
 class CampaignModel extends Corsel
 {
     protected $postType = 'leyka_campaign'; //leyka_campaign';

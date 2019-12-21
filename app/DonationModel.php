@@ -3,11 +3,13 @@
 namespace App;
 
 use Corcel\Model\Post as Corsel;
+use App\BxLog as Log;
 
 class DonationModel extends Corsel
 {
     public function get($data)
     {
+        $log = new Log();
         for ($i = 0; $i < 3; $i++) {
             try {
                 $a = Corsel::query()->type('leyka_donation');
@@ -32,6 +34,8 @@ class DonationModel extends Corsel
                 if (isset($data['campaign_id'])) {
                     $a->hasMeta(['leyka_campaign_id' => $data['campaign_id']]);
                 }
+
+                $log->log_debug(json_encode($a->getQuery()));
                 return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
             } catch
             (\PDOException $exception) {
@@ -120,7 +124,12 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['comment'] = (String)$value->title;
             $relevant[$value->ID]['raw'] = "";
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
+
+            $debug = json_encode($relevant[$value->ID]['all']);
+            $log = new Log();
+            $log->log_debug($debug);
         }
+
         return $relevant;
     }
 
