@@ -35,6 +35,7 @@ class DataAccess extends Controller
                 dump($mod->get($data));
             } else {
                 $mod = new Donation();
+                $mod->setConnection('mysql1');
                 dump($mod->get($data));
             }
         } else echo "требуется request параметры. Для campaign \"?type=c\"";

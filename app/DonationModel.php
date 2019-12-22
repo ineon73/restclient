@@ -12,7 +12,7 @@ class DonationModel extends Corsel
         $log = new Log();
         for ($i = 0; $i < 3; $i++) {
             try {
-                $a = Corsel::query()->type('leyka_donation');
+                $a = Corsel::type('leyka_donation');
                 if (isset($data['modifiedTo'])) {
                     $a->whereDate('post_modified', '<=', $data['modifiedTo']);
                 }
@@ -37,7 +37,6 @@ class DonationModel extends Corsel
                 if (isset($data['campaign_id'])) {
                     $a->hasMeta(['leyka_campaign_id' => $data['campaign_id']]);
                 }
-
                 $log->log_debug(json_encode($a->getQuery()));
                 return $this->filterForData($a->orderBy('post_modified', 'asc')->get());
             } catch
@@ -130,7 +129,7 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['comment'] = (String)$value->title;
             $relevant[$value->ID]['raw'] = "";
             $relevant[$value->ID]['raw'] = $value->toJson(JSON_UNESCAPED_UNICODE);
-            $debug = json_encode($relevant[$value->ID]['all']);
+            $debug = json_encode($value->toArray());
             $log = new Log();
             $log->log_debug($debug);
         }
