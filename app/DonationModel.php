@@ -101,9 +101,10 @@ class DonationModel extends Corsel
             }
             if (is_array($gateway) and isset($gateway['CardLastFour'])) {
                 $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
-                $relevant[$value->ID]['CardExpDate'] = (String)$gateway['CardExpDate'];
+                $relevant[$value->ID]['CardExpDate'] = $gateway['CardExpDate'];
                 $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
                 $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
+
             }
             if (isset($payment_log['1'])) {
                 $relevant[$value->ID]['cardholder'] = $payment_log['1']['result']['FIRSTNAME'] . ' ' . $payment_log['1']['result']['LASTNAME'];
@@ -116,9 +117,9 @@ class DonationModel extends Corsel
             //$gateway=$this->fixObject($gateway);
             //$gateway= $this->casttoclass('YandexCheckout\Request\Payments\PaymentResponse',$gateway);
             //dd($gateway);
-            //$relevant[$value->ID]['all'] = $value->toArray();
-            $relevant[$value->ID]['post_date'] = "";
-            $relevant[$value->ID]['post_date'] = $value->post_date;
+            $relevant[$value->ID]['all'] = $value->toArray();
+            $relevant[$value->ID]['created_at'] = "";
+            $relevant[$value->ID]['created_at'] = $value->created_at;
             $relevant[$value->ID]['post_date_gmt'] = "";
             $relevant[$value->ID]['post_date_gmt'] = $value->post_date_gmt;
             $relevant[$value->ID]['post_modified'] = "";
@@ -174,7 +175,7 @@ class DonationModel extends Corsel
         'meta_value' => 'string',
         'id' => 'integer',
         'date' => 'datetime',
-        'date_gmt' => 'datetime',
+        'post_date_gmt' => 'datetime',
         'post_modified' => 'datetime',
         'post_modified_gmt' => 'datetime',
         'slug' => 'string',
@@ -198,5 +199,6 @@ class DonationModel extends Corsel
         '_leyka_managers_emails_date' => 'date',
         'leyka_recurrents_cancel_date' => 'date',
         '_leyka_donation_id_on_gateway_response' => 'integer',
+
     ];
 }
