@@ -4,9 +4,13 @@ namespace App;
 
 use Corcel\Model\Post as Corsel;
 use App\BxLog as Log;
+use Carbon\Carbon;
+use DateTime;
 
 class DonationModel extends Corsel
 {
+    protected $debug = true;
+
     public function get($data)
     {
         $log = new Log();
@@ -55,7 +59,16 @@ class DonationModel extends Corsel
     {
         $relevant = [];
         foreach ($callback as $value) {
+            if ($this->debug) echo 'this is source obj<pre>';
+            print_r($value);
+            echo '</pre>';
             $relevant[$value->ID]['email'] = "";
+
+            $leyka_subs_email = $value->leyka_donor_subscription_email;
+
+            if (isset($leyka_subs_email)) {
+                $relevant[$value->ID]['email'][] = $value->leyka_donor_subscription_email;
+            }
             $relevant[$value->ID]['email'] = (Array)$value->leyka_donor_email;
             $relevant[$value->ID]['full_name'] = "";
             $relevant[$value->ID]['full_name'] = (String)$value->leyka_donor_name;
@@ -91,35 +104,102 @@ class DonationModel extends Corsel
             $relevant[$value->ID]['CardExpDate'] = "";
             $relevant[$value->ID]['acquirer_id'] = "";
             $relevant[$value->ID]['cardholder'] = "";
-            $gateway = @unserialize($value->leyka_gateway_response);
-            $payment_log = @unserialize($value->_paypal_payment_log);
-            if (is_array($gateway) and isset($gateway['InvId'])) {
-                $relevant[$value->ID]['acquirer_id'] = $gateway['InvId'];
-            }
-            if (is_array($gateway) and isset($gateway['Reason'])) {
-                $relevant[$value->ID]['Reason'] = $gateway['Reason'];
-            }
-            if (is_array($gateway) and isset($gateway['CardLastFour'])) {
-                $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
-                $relevant[$value->ID]['CardExpDate'] = $gateway['CardExpDate'];
-                $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
-                $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
+
+            if (isset($value->meta->leyka_gateway_response)) {
+
+                $gateway = @unserialize($value->leyka_gateway_response);
+
+                echo 'gateway keys <pre>';
+                print_r(array_keys((array)$gateway));
+                echo '</pre>';
+
+                if (is_array($gateway)) {
+                    if (isset($gateway['CardLastFour'])) {
+
+                        //Cloudpayments
+                        $relevant[$value->ID]['bin'] = (String)$gateway['CardLastFour'];
+
+                        //modify exp date
+
+                        $relevant[$value->ID]['CardExpDate'] = $this->dateConvert((String)$gateway['CardExpDate']);
+                        $relevant[$value->ID]['acquirer_id'] = (String)$gateway['TransactionId'];
+                        $relevant[$value->ID]['cardholder'] = (String)$gateway['Name'];
+                        if(isset($gateway['Reason'])) $relevant[$value->ID]['reject_reason'] = (String)$gateway['Reason'];
+                        $relevant[$value->ID]['country'] = (String)$gateway['IpCountry'];
+                        $relevant[$value->ID]['city'] = (String)$gateway['IpCity'];
+
+
+                    } else if (isset($gateway['inv_id'])) {
+
+                        //robokassa
+
+                        $relevant[$value->ID]['acquirer_id'] = $gateway['inv_id'];
+
+                        if (isset($gateway['Fee'])) {
+                            $relevant[$value->ID]['Fee'] = $gateway['Fee'];
+
+                            if (isset($gateway['IncSum'])) $relevant[$value->ID]['summa_rur_net'] = $gateway['IncSum'] - $gateway['Fee'];
+
+                        }
+                        if (isset($gateway['EMail'])) {
+
+                            $relevant[$value->ID]['email'][] = $gateway['EMail'];
+
+
+                            echo 'Email_gates <pre>';
+                            print_r($relevant[$value->ID]['email']);
+                            echo '</pre>';
+                        }
+
+                        if (isset($gateway['PaymentMethod'])) {
+                            $relevant[$value->ID]['payment_method'] = $gateway['PaymentMethod'];
+                        }
+
+                    }}
+
+
+
+
+               /* if (isset($gateway['_expiryYear'])) {
+                    $relevant[$value->ID]['CardExpDate'] = (String)$gateway['_expiryYear'] . "/" . (String)substr($gateway['_expiryMonth'], 1, 2);
+                    $relevant[$value->ID]['bin'] = (String)$gateway['_last4'];
+                }*/
+
+
 
             }
-            if (isset($payment_log['1'])) {
-                $relevant[$value->ID]['cardholder'] = $payment_log['1']['result']['FIRSTNAME'] . ' ' . $payment_log['1']['result']['LASTNAME'];
+            if (isset($value->meta->_paypal_token)) {
+                $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_token;
+            } else if (isset($value->meta->_paypal_sale_id)) {
+                $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
+            }
+
+            if (isset($value->meta->_paypal_payment_log)) {
+                $paypal_payment_log = @unserialize($value->meta->_paypal_payment_log);
+
+                $arrayMessage= explode("\n",trim($paypal_payment_log['2']['result'], ''));
+                $relevant[$value->ID]['message'] =substr(trim($arrayMessage['11']),20,-1);
+                /*foreach ($paypal_payment_log as $log_id => $logentry) {
+                    if (is_array($logentry['result'])) {
+                        echo 'LOG ENTRY';
+                        echo (String)$logentry['result'];
+                        preg_match('/(L_LONGMESSAGE0)/', $logentry['result'], $matches, PREG_OFFSET_CAPTURE);
+                        echo '$PREG_MATHC RES<pre>';
+                        print_r($matches);
+                        echo '</pre>';
+                    }
+                }*/
             }
             //if (isset($value->meta->_paypal_sale_id)) $relevant[$value->ID]['acquirer_id'] = $value->meta->_paypal_sale_id;
-            /*if (isset($gateway['_expiryYear'])) {
-                $relevant[$value->ID]['CardExpDate'] = (String)$gateway['_expiryYear'] . "/" . (String)substr($gateway['_expiryMonth'], 1, 2);
-                $relevant[$value->ID]['bin'] = (String)$gateway['_last4'];
-            }*/
+
+
             //$gateway=$this->fixObject($gateway);
             //$gateway= $this->casttoclass('YandexCheckout\Request\Payments\PaymentResponse',$gateway);
             //dd($gateway);
             $relevant[$value->ID]['all'] = $value->toArray();
             $relevant[$value->ID]['created_at'] = "";
             $relevant[$value->ID]['created_at'] = $value->created_at;
+
             $relevant[$value->ID]['post_date_gmt'] = "";
             $relevant[$value->ID]['post_date_gmt'] = $value->post_date_gmt;
             $relevant[$value->ID]['post_modified'] = "";
@@ -138,19 +218,21 @@ class DonationModel extends Corsel
         return $relevant;
     }
 
-    function casttoclass($class, $object)
-    {
-        return unserialize(preg_replace('/^O:\d+:"[^"]++"/', 'O:' . strlen($class) . ':"' . $class . '"', serialize($object)));
+    public function dateConvert($date) {
+        $carbon = DateTime::createFromFormat("m/y",$date);
+       /* $array = explode("/",$date);
+        $year = $array['0'];
+        $month = $array['1'];
+        $carbon = Carbon::createFromDate();
+        $carbon->month($month);
+        $carbon->year($year);*/
+
+
+        return $carbon;
     }
 
-    function fixObject(&$object)
-    {
-        if (!is_object($object) && gettype($object) == 'object')
-            return ($object = unserialize(serialize($object)));
-        return $object;
-    }
-
-    protected $casts = [
+    protected
+        $casts = [
         'post_author' => 'integer',
         'post_content' => 'string',
         'post_title' => 'string',
